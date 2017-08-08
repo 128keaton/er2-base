@@ -8,6 +8,13 @@ FROM ubuntu:16.04
 # File Author / Maintainer
 MAINTAINER Keaton Burleson <keaton.burleson@me.com>
 
+# Expose port 80
+EXPOSE 80
+
+# Defines the 'docker attach' entrypoint
+ENTRYPOINT ["/bin/bash"]
+
+
 ############################################################
 # Arguments
 ############################################################
@@ -81,7 +88,7 @@ USER ducky
 RUN mkdir -p /home/ducky/.composer/
 
 # Add the default composer.json
-COPY docker-config/composer.json /home/ducky/.composer/composer.json
+COPY composer.json /home/ducky/.composer/composer.json
 
 # Update Composer
 RUN composer config --global github-protocols https
@@ -100,5 +107,6 @@ RUN /home/ducky/.composer/vendor/bin/phpcs --config-set installed_paths /home/du
 ############################################################
 # Install nginx
 ############################################################
+
 USER root
 RUN apt-fast -y install nginx
