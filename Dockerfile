@@ -11,9 +11,6 @@ MAINTAINER Keaton Burleson <keaton.burleson@me.com>
 # Expose port 80
 EXPOSE 80
 
-# Defines the 'docker attach' entrypoint
-ENTRYPOINT ["/bin/bash"]
-
 
 ############################################################
 # Arguments
@@ -27,14 +24,12 @@ ENV XDEBUGINI_PATH=/usr/local/etc/php/conf.d/xdebug.ini
 # Install Essential Packages
 ############################################################
 
-RUN apt-get update
-RUN apt-get install -y software-properties-common
-
-RUN add-apt-repository ppa:saiarcot895/myppa
-RUN apt-get update
-RUN apt-get install -y apt-fast
-
-RUN apt-fast install -y --no-install-recommends php$PHP_VERSION \
+RUN apt-get update && \
+    apt-get install -y software-properties-common && \ 
+    add-apt-repository ppa:saiarcot895/myppa && \
+    apt-get update && \
+    apt-get install -y apt-fast && \
+    apt-fast install -y --no-install-recommends php$PHP_VERSION \
                         cups \
                         supervisor \
                         nodejs \
@@ -72,9 +67,8 @@ RUN echo 'export PATH=$HOME/.config/composer/vendor/bin/:$PATH' >> .bash_profile
 ############################################################
 
 USER root
-RUN sudo ln -s /usr/bin/nodejs /usr/bin/node
-
-RUN npm install -g uglifycss uglify-js less
+RUN sudo ln -s /usr/bin/nodejs /usr/bin/node && \
+           npm install -g uglifycss uglify-js less
 
 ############################################################
 # Install Composer
@@ -91,8 +85,8 @@ RUN mkdir -p /home/ducky/.composer/
 COPY composer.json /home/ducky/.composer/composer.json
 
 # Update Composer
-RUN composer config --global github-protocols https
-RUN composer global update
+RUN composer config --global github-protocols https && \
+    composer global update
 
 # Switch to ducky
 WORKDIR /home/ducky
@@ -110,3 +104,7 @@ RUN /home/ducky/.composer/vendor/bin/phpcs --config-set installed_paths /home/du
 
 USER root
 RUN apt-fast -y install nginx
+
+
+WORKDIR /home/ducky
+CMD ["bash"]
