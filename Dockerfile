@@ -8,10 +8,6 @@ FROM ubuntu:16.04
 # File Author / Maintainer
 MAINTAINER Keaton Burleson <keaton.burleson@me.com>
 
-# Expose port 80
-EXPOSE 80
-
-
 ############################################################
 # Arguments
 ############################################################
@@ -38,19 +34,15 @@ RUN apt-get update && \
                         unzip \
                         sudo \
                         curl \
-                        git
+                        git \  
+                        php-xml \
+                        php$PHP_VERSION-mbstring \
+                        php$PHP_VERSION-fpm \
+                        php$PHP_VERSION-zip \
+                        phpmyadmin \
+                        php$PHP_VERSION-cli \
+                        php$PHP_VERSION-dev
 
-############################################################
-# Install PHP Extensions
-############################################################
-
-RUN apt-fast install -y php-xml \
-                       php$PHP_VERSION-mbstring \
-                       php$PHP_VERSION-fpm \
-                       php$PHP_VERSION-zip \
-                       phpmyadmin \
-                       php$PHP_VERSION-cli \
-                       php$PHP_VERSION-dev
 
 ############################################################
 # Create 'ducky' user
@@ -97,14 +89,35 @@ RUN echo 'export PATH=$PATH:/home/ducky/.composer/vendor/bin' >> .bash_profile
 # Update the phpcs coding standard
 RUN /home/ducky/.composer/vendor/bin/phpcs --config-set installed_paths /home/ducky/.composer/vendor/escapestudios/symfony2-coding-standard
 
-
 ############################################################
 # Install nginx
 ############################################################
 
 USER root
-RUN apt-fast -y install nginx
+RUN \
+  add-apt-repository -y ppa:nginx/stable && \
+  apt-get update && \
+  apt-fast install -y nginx && \
+  rm -rf /var/lib/apt/lists/* && \
+  echo "\ndaemon off;" >> /etc/nginx/nginx.conf && \
+  chown -R www-data:www-data /var/lib/nginx
 
+# Define mountable directories.
+VOLUME ["/etc/nginx/sites-enabled", "/etc/nginx/certs", "/etc/nginx/conf.d", "/var/log/nginx", "/var/www/html"]
 
-WORKDIR /home/ducky
-CMD ["bash"]
+RUN rm -rf /etc/nginx/conf.d/* && \
+    rm -rf /usr/share/nginx/html/* && \
+	rm -rf /var/lib/apt/lists/*
+
+COPY default /etc/nginx/sites-enabled/
+COPY supervisord.conf /etc/supervisord.conf
+RUN service php7.0-fpm start
+RUN ln -sf /dev/stdout /var/log/nginx/access.log && \
+	ln -sf /dev/stderr /var/log/nginx/error.log
+
+# Define default command.
+CMD ["/usr/bin/supervisord", "-n", "-c",  "/etc/supervisord.conf"]
+
+# Expose ports.
+EXPOSE 80 443
+
