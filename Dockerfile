@@ -139,7 +139,6 @@ EXPOSE 80 443
 RUN chown -R ducky:ducky /var/www/html && \
     chmod -R 755 /var/www/html
     
-USER ducky
 # Set the working directory to the web folder
 WORKDIR /var/www/html/
 
