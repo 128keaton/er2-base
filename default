@@ -7,11 +7,7 @@ server {
     client_max_body_size 20M;
  
     # Document root, make sure this points to your Symfony2 /web directory
-    root /home/user/sites/mysite.com/web;
- 
-    # Logging
-    error_log  /home/user/sites/nginx-log/error.log;
-    access_log /home/user/sites/nginx-log/access.log;
+    root /var/www/html/web;
  
     location / {
         # try to serve file directly, fallback to rewrite

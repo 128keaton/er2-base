@@ -107,10 +107,13 @@ VOLUME ["/etc/nginx/sites-enabled", "/etc/nginx/certs", "/etc/nginx/conf.d", "/v
 
 RUN rm -rf /etc/nginx/conf.d/* && \
     rm -rf /usr/share/nginx/html/* && \
-	rm -rf /var/lib/apt/lists/*
+	rm -rf /var/lib/apt/lists/* && \
+    rm -rf /etc/nginx/sites-enabled/*
 
 COPY default /etc/nginx/sites-enabled/
 COPY supervisord.conf /etc/supervisord.conf
+COPY php.ini /etc/php/7.0/fpm/
+
 RUN service php7.0-fpm start
 RUN ln -sf /dev/stdout /var/log/nginx/access.log && \
 	ln -sf /dev/stderr /var/log/nginx/error.log
