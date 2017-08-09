@@ -12,7 +12,7 @@ MAINTAINER Keaton Burleson <keaton.burleson@me.com>
 # Arguments
 ############################################################
 ENV TZ "America/Chicago"
-
+ENV APP_NAME default
 ENV DEBIAN_FRONTEND noninteractive
 ############################################################
 # Install Essential Packages
@@ -78,9 +78,9 @@ RUN rm -rf /var/lib/apt/lists/* && \
     rm -rf /etc/nginx/sites-enabled/*
 
 COPY conf/nginx.conf /etc/nginx/
-COPY conf/symfony /etc/nginx/sites-available/symfony.conf
+COPY conf/$APP_NAME /etc/nginx/sites-available/$APP_NAME.conf
 
-RUN ln -s /etc/nginx/sites-available/symfony.conf /etc/nginx/sites-enabled/symfony
+RUN ln -s /etc/nginx/sites-available/$APP_NAME.conf /etc/nginx/sites-enabled/$APP_NAME
 
 RUN echo "upstream php-upstream { server php:9000; }" > /etc/nginx/conf.d/upstream.conf
 
