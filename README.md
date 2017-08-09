@@ -6,4 +6,4 @@ Designed for Symfony apps.
 * nginx
 * nodejs
 * yarn
-
+* supervisor
