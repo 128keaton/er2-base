@@ -3,7 +3,7 @@
 ############################################################
 
 # Set the base image to Ubuntu
-FROM ubuntu:16.04
+FROM debian:stretch
 
 # File Author / Maintainer
 MAINTAINER Keaton Burleson <keaton.burleson@me.com>
@@ -21,12 +21,13 @@ ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
                         supervisor \
-                        nodejs \
-                        npm \
                         curl \
-                        git \ 
                         tzdata \
-                        nginx
+                        nginx \
+                        build-essential \
+                        libssl-dev \
+                        gnupg \
+                        apt-transport-https
 
 COPY conf/supervisord.conf /etc/supervisord.conf
 
@@ -54,12 +55,20 @@ WORKDIR /home/ducky
 RUN echo 'export PATH=$HOME/.config/composer/vendor/bin/:$PATH' >> .bash_profile
 
 ############################################################
-# Configure Node.js
+# Configure and Install Node.js
 ############################################################
 
 USER root
+
+RUN curl -sL https://deb.nodesource.com/setup_8.x | bash -
+RUN apt-get install -y nodejs 
+
+RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
+RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
+RUN  apt-get update &&  apt-get install yarn
+
 RUN ln -s /usr/bin/nodejs /usr/bin/node && \
-           npm install -g uglifycss uglify-js less
+           yarn global add uglifycss uglify-js less
 
 ############################################################
 # Install nginx
