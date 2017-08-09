@@ -12,7 +12,9 @@ MAINTAINER Keaton Burleson <keaton.burleson@me.com>
 # Arguments
 ############################################################
 
-ARG PHP_VERSION=7.0
+ENV PHP_VERSION=7.0
+ENV TZ "America/Chicago"
+
 ENV DEBIAN_FRONTEND noninteractive
 ENV XDEBUGINI_PATH=/usr/local/etc/php/conf.d/xdebug.ini
 
@@ -41,8 +43,18 @@ RUN apt-get update && \
                         php$PHP_VERSION-zip \
                         phpmyadmin \
                         php$PHP_VERSION-cli \
-                        php$PHP_VERSION-dev
+                        php$PHP_VERSION-dev \
+                        tzdata
 
+############################################################
+# Update Timezone
+############################################################
+
+RUN echo $TZ > /etc/timezone && \
+    rm /etc/localtime && \
+    ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && \
+    dpkg-reconfigure -f noninteractive tzdata && \
+    apt-get clean
 
 ############################################################
 # Create 'ducky' user
@@ -123,4 +135,7 @@ CMD ["/usr/bin/supervisord", "-n", "-c",  "/etc/supervisord.conf"]
 
 # Expose ports.
 EXPOSE 80 443
+
+# Set the working directory to the web folder
+WORKDIR /var/www/html/web
 
