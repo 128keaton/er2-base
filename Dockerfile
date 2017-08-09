@@ -74,7 +74,7 @@ USER ducky
 RUN mkdir -p /home/ducky/.composer/
 
 # Add the default composer.json
-COPY composer.json /home/ducky/.composer/composer.json
+COPY conf/composer.json /home/ducky/.composer/composer.json
 
 # Update Composer
 RUN composer config --global github-protocols https && \
@@ -102,17 +102,17 @@ RUN \
   echo "\ndaemon off;" >> /etc/nginx/nginx.conf && \
   chown -R www-data:www-data /var/lib/nginx
 
-# Define mountable directories.
-VOLUME ["/etc/nginx/sites-enabled", "/etc/nginx/certs", "/etc/nginx/conf.d", "/var/log/nginx", "/var/www/html"]
-
 RUN rm -rf /etc/nginx/conf.d/* && \
     rm -rf /usr/share/nginx/html/* && \
 	rm -rf /var/lib/apt/lists/* && \
     rm -rf /etc/nginx/sites-enabled/*
 
-COPY default /etc/nginx/sites-enabled/
-COPY supervisord.conf /etc/supervisord.conf
-COPY php.ini /etc/php/7.0/fpm/
+# Define mountable directories.
+VOLUME ["/etc/nginx/sites-enabled", "/etc/nginx/certs", "/etc/nginx/conf.d", "/var/log/nginx", "/var/www/html"]
+
+COPY conf/default /etc/nginx/sites-enabled/
+COPY conf/supervisord.conf /etc/supervisord.conf
+COPY conf/php.ini /etc/php/7.0/fpm/
 
 RUN service php7.0-fpm start
 RUN ln -sf /dev/stdout /var/log/nginx/access.log && \
