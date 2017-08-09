@@ -68,15 +68,18 @@ RUN ln -s /usr/bin/nodejs /usr/bin/node && \
 RUN rm -rf /var/lib/apt/lists/* && \
     rm -rf /etc/nginx/sites-enabled/*
 
-# Define mountable directories.
-VOLUME ["/var/www/html"]
+COPY conf/nginx.conf /etc/nginx/
+COPY conf/symfony /etc/nginx/sites-available/symfony.conf
 
-ADD conf/nginx.conf /etc/nginx/
-ADD conf/symfony /etc/nginx/sites-available/
+RUN ln -s /etc/nginx/sites-available/symfony.conf /etc/nginx/sites-enabled/symfony
 
 RUN echo "upstream php-upstream { server php:9000; }" > /etc/nginx/conf.d/upstream.conf
-CMD ["nginx"]
 
-# Expose ports.
-EXPOSE 80 443
+RUN ln -sf /dev/stdout /var/log/nginx/access.log && \
+	ln -sf /dev/stderr /var/log/nginx/error.log
 
+# Define default command.
+CMD ["/usr/bin/supervisord", "-n", "-c",  "/etc/supervisord.conf"]
+
+EXPOSE 80
+EXPOSE 443
