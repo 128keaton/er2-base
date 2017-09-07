@@ -12,7 +12,7 @@ MAINTAINER Keaton Burleson <keaton.burleson@me.com>
 # Arguments
 ############################################################
 ENV TZ "America/Chicago"
-ENV APP_NAME default
+ENV APP_NAME web-app
 ENV DEBIAN_FRONTEND noninteractive
 ############################################################
 # Install Essential Packages
@@ -76,6 +76,7 @@ RUN ln -s /usr/bin/nodejs /usr/bin/node && \
 
 RUN rm -rf /var/lib/apt/lists/* && \
     rm -rf /etc/nginx/sites-enabled/*
+    rm -rf /etc/nginx/sites-available/*
 
 COPY conf/nginx.conf /etc/nginx/
 COPY conf/$APP_NAME /etc/nginx/sites-available/$APP_NAME.conf
