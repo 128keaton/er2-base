@@ -75,7 +75,7 @@ RUN ln -s /usr/bin/nodejs /usr/bin/node && \
 ############################################################
 
 RUN rm -rf /var/lib/apt/lists/* && \
-    rm -rf /etc/nginx/sites-enabled/*
+    rm -rf /etc/nginx/sites-enabled/* && \
     rm -rf /etc/nginx/sites-available/*
 
 COPY conf/nginx.conf /etc/nginx/
