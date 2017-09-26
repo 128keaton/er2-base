@@ -73,6 +73,10 @@ RUN ln -s /usr/bin/nodejs /usr/bin/node && \
 ############################################################
 # Install nginx
 ############################################################
+RUN rm -rf /etc/nginx-certs/ && \
+    mkdir /etc/nginx-certs/
+    
+COPY certs/* /etc/nginx-certs/
 
 RUN rm -rf /var/lib/apt/lists/* && \
     rm -rf /etc/nginx/sites-enabled/* && \

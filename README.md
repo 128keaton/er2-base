@@ -7,3 +7,6 @@ Designed for Symfony apps.
 * nodejs
 * yarn
 * supervisor
+
+## Generating SSL Cert:
+`sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout certs/ssl-cert.key -out certs/ssl-cert.crt`

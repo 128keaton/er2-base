@@ -1,4 +1,13 @@
 server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+    listen 443 ssl http2 default_server;
+    listen [::]:443 ssl http2 default_server;
+    
+    ssl    on;
+    ssl_certificate    /etc/nginx-certs/ssl-cert.crt;
+    ssl_certificate_key    /etc/nginx-certs/ssl-cert.key;
+
     server_name symfony.dev;
     root /var/www/html/web;
 
@@ -22,3 +31,4 @@ server {
     error_log /var/log/nginx/symfony_error.log;
     access_log /var/log/nginx/symfony_access.log;
 }
+
